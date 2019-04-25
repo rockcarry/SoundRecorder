@@ -1,0 +1,7 @@
+!.gitignore
+SoundRecorder.ncb
+SoundRecorder.suo
+SoundRecorder/SoundRecorder.aps
+SoundRecorder/SoundRecorder.vcproj.*
+SoundRecorder/ApicalAtlasIVSDK (ARMV4I)/
+

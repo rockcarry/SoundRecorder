@@ -251,30 +251,12 @@
 			<File
 				RelativePath=".\SoundRecorder.rc"
 				>
-				<FileConfiguration
-					Name="Debug|ApicalAtlasIVSDK (ARMV4I)"
-					>
-					<Tool
-						Name="VCResourceCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|ApicalAtlasIVSDK (ARMV4I)"
-					>
-					<Tool
-						Name="VCResourceCompilerTool"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\res\SoundRecorder.rc2"
 				>
 			</File>
 		</Filter>
-		<File
-			RelativePath=".\ReadMe.txt"
-			>
-		</File>
 	</Files>
 	<Globals>
 		<Global
