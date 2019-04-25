@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SoundRecorder", "SoundRecorder\SoundRecorder.vcproj", "{E6E90C83-751C-4B00-BAE1-41E1F405FD1F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|ApicalAtlasIVSDK (ARMV4I) = Debug|ApicalAtlasIVSDK (ARMV4I)
+		Release|ApicalAtlasIVSDK (ARMV4I) = Release|ApicalAtlasIVSDK (ARMV4I)
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E6E90C83-751C-4B00-BAE1-41E1F405FD1F}.Debug|ApicalAtlasIVSDK (ARMV4I).ActiveCfg = Debug|ApicalAtlasIVSDK (ARMV4I)
+		{E6E90C83-751C-4B00-BAE1-41E1F405FD1F}.Debug|ApicalAtlasIVSDK (ARMV4I).Build.0 = Debug|ApicalAtlasIVSDK (ARMV4I)
+		{E6E90C83-751C-4B00-BAE1-41E1F405FD1F}.Debug|ApicalAtlasIVSDK (ARMV4I).Deploy.0 = Debug|ApicalAtlasIVSDK (ARMV4I)
+		{E6E90C83-751C-4B00-BAE1-41E1F405FD1F}.Release|ApicalAtlasIVSDK (ARMV4I).ActiveCfg = Release|ApicalAtlasIVSDK (ARMV4I)
+		{E6E90C83-751C-4B00-BAE1-41E1F405FD1F}.Release|ApicalAtlasIVSDK (ARMV4I).Build.0 = Release|ApicalAtlasIVSDK (ARMV4I)
+		{E6E90C83-751C-4B00-BAE1-41E1F405FD1F}.Release|ApicalAtlasIVSDK (ARMV4I).Deploy.0 = Release|ApicalAtlasIVSDK (ARMV4I)
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
