@@ -76,6 +76,37 @@ void save_wave_file(char *file, int samprate, int channels, INT16 *buf, int len)
 }
 //-- for wave file
 
+#define IOCTL_AUD_MICGAIN_GET  CTL_CODE(FILE_DEVICE_SOUND, 2058, METHOD_BUFFERED, FILE_ANY_ACCESS)
+#define IOCTL_AUD_MICGAIN_SET  CTL_CODE(FILE_DEVICE_SOUND, 2054, METHOD_BUFFERED, FILE_ANY_ACCESS)
+int get_mic_gain(int *gain)
+{
+    HANDLE h = CreateFile(L"WAV1:", GENERIC_READ|GENERIC_WRITE, FILE_SHARE_READ|FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    if (h == INVALID_HANDLE_VALUE) {
+        MessageBox(NULL, L"failed to open wavdev !", L"error", MB_OK);
+        return -1;
+    }
+    DWORD ret = DeviceIoControl(h, IOCTL_AUD_MICGAIN_GET, NULL, 0, gain, sizeof(DWORD), NULL, NULL);
+    if (!ret) {
+//      MessageBox(NULL, L"failed to get mic gain !", L"error", MB_OK);
+    }
+    CloseHandle(h);
+    return ret ? 0 : -1;
+}
+
+int set_mic_gain(int gain)
+{
+    HANDLE h = CreateFile(L"WAV1:", GENERIC_READ|GENERIC_WRITE, FILE_SHARE_READ|FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    if (h == INVALID_HANDLE_VALUE) {
+        MessageBox(NULL, L"failed to open wavdev !", L"error", MB_OK);
+        return -1;
+    }
+    DWORD ret = DeviceIoControl(h, IOCTL_AUD_MICGAIN_SET, &gain, sizeof(DWORD), NULL, 0, NULL, NULL);
+    if (!ret) {
+//      MessageBox(NULL, L"failed to set mic gain !", L"error", MB_OK);
+    }
+    CloseHandle(h);
+    return ret ? 0 : -1;
+}
 
 // CSoundRecorderDlg dialog
 
@@ -85,6 +116,7 @@ CSoundRecorderDlg::CSoundRecorderDlg(CWnd* pParent /*=NULL*/)
     , m_hWaveOut(NULL)
     , m_nSampRate(0)
     , m_nChannels(0)
+    , m_nMicGain(0)
 {
     m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -94,6 +126,7 @@ void CSoundRecorderDlg::DoDataExchange(CDataExchange* pDX)
     CDialog::DoDataExchange(pDX);
     DDX_Radio(pDX, IDC_RADIO_SAMPRATE, m_nSampRate);
     DDX_Radio(pDX, IDC_RADIO_CHANNELS, m_nChannels);
+    DDX_Text(pDX, IDC_EDT_MIC_GAIN, m_nMicGain);
 }
 
 BEGIN_MESSAGE_MAP(CSoundRecorderDlg, CDialog)
@@ -105,6 +138,8 @@ BEGIN_MESSAGE_MAP(CSoundRecorderDlg, CDialog)
     ON_BN_CLICKED(IDC_BTN_PLAY, &CSoundRecorderDlg::OnBnClickedBtnPlay)
     ON_BN_CLICKED(IDC_BTN_REC2FILE, &CSoundRecorderDlg::OnBnClickedBtnRec2file)
     ON_BN_CLICKED(IDC_BTN_STOP, &CSoundRecorderDlg::OnBnClickedBtnStop)
+    ON_BN_CLICKED(IDC_BTN_INC_GAIN, &CSoundRecorderDlg::OnBnClickedBtnIncGain)
+    ON_BN_CLICKED(IDC_BTN_DEC_GAIN, &CSoundRecorderDlg::OnBnClickedBtnDecGain)
     ON_WM_DESTROY()
     ON_WM_TIMER()
 END_MESSAGE_MAP()
@@ -125,6 +160,7 @@ BOOL CSoundRecorderDlg::OnInitDialog()
     m_pWaveBuf = (INT16*)calloc(1, WAVE_BUF_SIZE);
     memset(&m_tWaveHdrIn , 0, sizeof(m_tWaveHdrIn ));
     memset(&m_tWaveHdrOut, 0, sizeof(m_tWaveHdrOut));
+    get_mic_gain(&m_nMicGain);
     UpdateData(FALSE);
     return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -237,4 +273,22 @@ void CSoundRecorderDlg::OnTimer(UINT_PTR nIDEvent)
     }
 
     CDialog::OnTimer(nIDEvent);
+}
+
+void CSoundRecorderDlg::OnBnClickedBtnIncGain()
+{
+    UpdateData(TRUE);
+    m_nMicGain++;
+    set_mic_gain( m_nMicGain);
+    get_mic_gain(&m_nMicGain);
+    UpdateData(FALSE);
+}
+
+void CSoundRecorderDlg::OnBnClickedBtnDecGain()
+{
+    UpdateData(TRUE);
+    m_nMicGain--;
+    set_mic_gain( m_nMicGain);
+    get_mic_gain(&m_nMicGain);
+    UpdateData(FALSE);
 }

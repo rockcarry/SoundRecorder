@@ -38,12 +38,15 @@ private:
     WAVEHDR      m_tWaveHdrOut;
     int          m_nSampRate;
     int          m_nChannels;
+    int          m_nMicGain;
 
 public:
     afx_msg void OnBnClickedBtnRecord();
     afx_msg void OnBnClickedBtnPlay();
     afx_msg void OnBnClickedBtnRec2file();
     afx_msg void OnBnClickedBtnStop();
+    afx_msg void OnBnClickedBtnIncGain();
+    afx_msg void OnBnClickedBtnDecGain();
     afx_msg void OnDestroy();
     afx_msg void OnTimer(UINT_PTR nIDEvent);
 };

@@ -65,3 +65,4 @@
 #endif
 
 #include <altcecrt.h>
+#include <winioctl.h>
