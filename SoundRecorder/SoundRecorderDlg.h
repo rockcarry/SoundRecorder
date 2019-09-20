@@ -36,9 +36,15 @@ private:
     INT16       *m_pWaveBuf;
     WAVEHDR      m_tWaveHdrIn;
     WAVEHDR      m_tWaveHdrOut;
+    CString      m_strRecTime;
     int          m_nSampRate;
     int          m_nChannels;
     int          m_nMicGain;
+    int          m_nRecTime;
+    #define STATUS_STOPPED    0
+    #define STATUS_PLAYING    1
+    #define STATUS_RECORDING  2
+    int          m_nStatus;
 
 public:
     afx_msg void OnBnClickedBtnRecord();
@@ -49,4 +55,7 @@ public:
     afx_msg void OnBnClickedBtnDecGain();
     afx_msg void OnDestroy();
     afx_msg void OnTimer(UINT_PTR nIDEvent);
+
+private:
+    void SaveCloseWaveInOutDev();
 };

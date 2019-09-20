@@ -11,6 +11,7 @@
 
 #define TIMER_WAVE_RECORD  1
 #define TIMER_WAVE_PLAY    2
+#define TIMER_RECORD_TIME  3
 
 //++ for wave file
 typedef unsigned int   uint32_t;
@@ -117,6 +118,9 @@ CSoundRecorderDlg::CSoundRecorderDlg(CWnd* pParent /*=NULL*/)
     , m_nSampRate(0)
     , m_nChannels(0)
     , m_nMicGain(0)
+    , m_nRecTime(0)
+    , m_nStatus(0)
+    , m_strRecTime(_T(""))
 {
     m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -127,6 +131,7 @@ void CSoundRecorderDlg::DoDataExchange(CDataExchange* pDX)
     DDX_Radio(pDX, IDC_RADIO_SAMPRATE, m_nSampRate);
     DDX_Radio(pDX, IDC_RADIO_CHANNELS, m_nChannels);
     DDX_Text(pDX, IDC_EDT_MIC_GAIN, m_nMicGain);
+    DDX_Text(pDX, IDC_TXT_REC_TIME, m_strRecTime);
 }
 
 BEGIN_MESSAGE_MAP(CSoundRecorderDlg, CDialog)
@@ -190,14 +195,22 @@ void CSoundRecorderDlg::OnSize(UINT /*nType*/, int /*cx*/, int /*cy*/)
 
 void CSoundRecorderDlg::OnBnClickedBtnRecord()
 {
-    OnBnClickedBtnStop();
-    SetTimer(TIMER_WAVE_RECORD, 100, NULL);
+    if (m_nStatus != STATUS_RECORDING) {
+        OnBnClickedBtnStop();
+        SetTimer(TIMER_WAVE_RECORD, 10  , NULL);
+        SetTimer(TIMER_RECORD_TIME, 1000, NULL);
+        m_nStatus = STATUS_RECORDING;
+    }
 }
 
 void CSoundRecorderDlg::OnBnClickedBtnPlay()
 {
-    OnBnClickedBtnStop();
-    SetTimer(TIMER_WAVE_PLAY, 100, NULL);
+    if (m_nStatus != STATUS_PLAYING) {
+        OnBnClickedBtnStop();
+        SetTimer(TIMER_WAVE_PLAY  , 10  , NULL);
+        SetTimer(TIMER_RECORD_TIME, 1000, NULL);
+        m_nStatus = STATUS_PLAYING;
+    }
 }
 
 void CSoundRecorderDlg::OnBnClickedBtnRec2file()
@@ -210,18 +223,14 @@ void CSoundRecorderDlg::OnBnClickedBtnRec2file()
 
 void CSoundRecorderDlg::OnBnClickedBtnStop()
 {
-    if (m_hWaveIn) {
-        waveInStop(m_hWaveIn);
-        waveInUnprepareHeader(m_hWaveIn, &m_tWaveHdrIn, sizeof(WAVEHDR));
-        waveInClose(m_hWaveIn);
-        m_hWaveIn = NULL;
+    if (m_nStatus != STATUS_STOPPED) {
+        m_nStatus  = STATUS_STOPPED;
+        KillTimer(TIMER_RECORD_TIME);
+        m_nRecTime   = 0;
+        m_strRecTime = "";
+        UpdateData(FALSE);
     }
-    if (m_hWaveOut) {
-        waveOutReset(m_hWaveOut);
-        waveOutUnprepareHeader(m_hWaveOut, &m_tWaveHdrOut, sizeof(WAVEHDR));
-        waveOutClose(m_hWaveOut);
-        m_hWaveOut = NULL;
-    }
+    SaveCloseWaveInOutDev();
 }
 
 BOOL CSoundRecorderDlg::PreTranslateMessage(MSG *pMsg)
@@ -230,7 +239,7 @@ BOOL CSoundRecorderDlg::PreTranslateMessage(MSG *pMsg)
     case MM_WIM_CLOSE:
     case MM_WOM_DONE:
     case MM_WOM_CLOSE:
-        OnBnClickedBtnStop();
+        SaveCloseWaveInOutDev();
         break;
     }
     return CDialog::PreTranslateMessage(pMsg);
@@ -247,6 +256,8 @@ void CSoundRecorderDlg::OnTimer(UINT_PTR nIDEvent)
         m_tWaveFmt.nAvgBytesPerSec= m_tWaveFmt.nSamplesPerSec * sizeof(INT16) * m_tWaveFmt.nChannels;
         m_tWaveFmt.nBlockAlign    = sizeof(INT16) * m_tWaveFmt.nChannels;
         m_tWaveFmt.wBitsPerSample = 16;
+        m_strRecTime = "0s";
+        UpdateData(FALSE);
     }
 
     switch (nIDEvent) {
@@ -270,6 +281,10 @@ void CSoundRecorderDlg::OnTimer(UINT_PTR nIDEvent)
         waveOutRestart(m_hWaveOut);
         waveOutWrite(m_hWaveOut, &m_tWaveHdrOut, sizeof(WAVEHDR));
         break;
+    case TIMER_RECORD_TIME:
+        m_strRecTime.Format(TEXT("%ds"), ++m_nRecTime);
+        UpdateData(FALSE);
+        break;
     }
 
     CDialog::OnTimer(nIDEvent);
@@ -291,4 +306,20 @@ void CSoundRecorderDlg::OnBnClickedBtnDecGain()
     set_mic_gain( m_nMicGain);
     get_mic_gain(&m_nMicGain);
     UpdateData(FALSE);
+}
+
+void CSoundRecorderDlg::SaveCloseWaveInOutDev()
+{
+    if (m_hWaveIn) {
+        waveInStop(m_hWaveIn);
+        waveInUnprepareHeader(m_hWaveIn, &m_tWaveHdrIn, sizeof(WAVEHDR));
+        waveInClose(m_hWaveIn);
+        m_hWaveIn = NULL;
+    }
+    if (m_hWaveOut) {
+        waveOutReset(m_hWaveOut);
+        waveOutUnprepareHeader(m_hWaveOut, &m_tWaveHdrOut, sizeof(WAVEHDR));
+        waveOutClose(m_hWaveOut);
+        m_hWaveOut = NULL;
+    }
 }
