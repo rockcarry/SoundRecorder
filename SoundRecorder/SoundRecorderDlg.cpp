@@ -166,6 +166,7 @@ BOOL CSoundRecorderDlg::OnInitDialog()
     memset(&m_tWaveHdrIn , 0, sizeof(m_tWaveHdrIn ));
     memset(&m_tWaveHdrOut, 0, sizeof(m_tWaveHdrOut));
     get_mic_gain(&m_nMicGain);
+    waveOutSetVolume(0,0xFFFFFFFF); // set to max volume
     UpdateData(FALSE);
     return TRUE;  // return TRUE  unless you set the focus to a control
 }
